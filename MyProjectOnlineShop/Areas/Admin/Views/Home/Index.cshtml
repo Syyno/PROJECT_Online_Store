@@ -1,0 +1,36 @@
+﻿@model IQueryable<Product>
+@{
+    ViewData["Title"] = "Admin | Panel";
+}
+<div>
+    <h2>Наши услуги</h2>
+    <div clas="div-box">
+        <a asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="">Добавить продукт</a>
+    </div>
+    @if (Model.Any())
+    {
+        <div>
+            @foreach (Product product in Model)
+            {
+                <div class="admin-product">
+                    <a asp-area="" asp-controller="Catalog" asp-action="Item" asp-route-id="@product.Id">
+                        <img src="~/img/product-img/@product.ImgPath" />
+                    </a>
+                    <a asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@product.Id">Редактировать</a>
+                    <form style="display: inline-block;" id="form-@product.Id" asp-area="Admin" asp-controller="Products" asp-action="Delete" method="post">
+                        <input type="hidden" name="id" value="@product.Id" />
+                        <a href="#" onclick="document.getElementById('form-@product.Id').submit();">Удалить</a>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+    <div class>
+        <form asp-area="" asp-controller="Signin" asp-action="Logout" method="post">
+            <input type="submit" value="Выйти" />
+        </form>
+    </div>
+</div>
+
+
+

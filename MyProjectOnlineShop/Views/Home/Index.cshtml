@@ -1,0 +1,29 @@
+﻿@using MyProjectOnlineShop.Data.Entities
+@model IQueryable<MyProjectOnlineShop.Data.Entities.Product>
+@{
+    ViewData["Title"] = "My Shop | Main";
+}
+<div class="products-catagories-area clearfix">
+    <div class="amado-pro-catagory clearfix">
+        @if (Model?.Any() == true)
+        {
+            @foreach (Product product in Model)
+            {
+                <div class="single-products-catagory clearfix">
+                    <a asp-controller="Catalog" asp-action="Item" asp-route-id="@product.Id">
+                        <img src="/img/product-img/@product.ImgPath" alt="">
+                        <div class="hover-content">
+                            <div class="line"></div>
+                            <p>$@product.Price</p>
+                            <h4>@product.Name</h4>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            <h2>There is no products yet, come back later!</h2>
+        }
+    </div>
+</div>

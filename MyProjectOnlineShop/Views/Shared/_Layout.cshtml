@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    @await Html.PartialAsync("_MetaTagsPartial")
+    <link rel="icon" href="/img/core-img/favicon.ico">
+    @await Html.PartialAsync("_StylesPartial")
+</head>
+<body>
+    @await Html.PartialAsync("_SearchbarPartial")
+    <div class="main-content-wrapper d-flex clearfix">
+        @await Html.PartialAsync("_HeaderPartial")
+        @RenderBody()
+    </div>
+    @await Html.PartialAsync("_FooterPartial")
+</body>
+@await Html.PartialAsync("_JScripts")
+</html>

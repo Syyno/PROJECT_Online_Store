@@ -1,0 +1,109 @@
+﻿@model MyProjectOnlineShop.Data.Entities.Product
+@{
+    ViewData["Title"] = "Admin | Edit";
+}
+<script src="~/js/ckeditor/ckeditor.js"></script>
+
+<div>
+    <div>
+        <form asp-area="Admin" asp-controller="Products" asp-action="Edit" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImgPath" />
+            <input type="hidden" asp-for="AdditionalPictures" />
+
+            <div asp-validation-summary="All"></div>
+            <div>
+                <label asp-for="Name"></label>
+                <input asp-for="Name" />
+                <span asp-validation-for="Name"></span>
+            </div>
+            <div>
+                <label asp-for="DescriptionFull"></label>
+                <textarea asp-for="DescriptionFull"></textarea>
+                <span asp-validation-for="DescriptionFull"></span>
+            </div>
+            <div>
+                <label asp-for="Price"></label>
+                <input asp-for="Price">
+                <span asp-validation-for="Price"></span>
+            </div>
+            <div>
+                <label asp-for="Quantity"></label>
+                <input asp-for="Quantity">
+                <span asp-validation-for="Quantity"></span>
+            </div>
+            <div>
+                <label asp-for="ImgPath"></label>
+                <input type="file" name="titleImageFile" id="titleImageFile" />
+                <div>
+                    <img clas="img-block" src="/img/product-img/@Model.ImgPath" />
+                </div>
+
+                @if (Model.AdditionalPictures != null && Model.AdditionalPictures?.Count != 0)
+                {
+                    if (Model.AdditionalPictures.Count <= 3)
+                    {
+
+                        foreach (AdditionalPicture picture in Model.AdditionalPictures)
+                        {
+                            <p>Дополнительная картинка</p>
+                            <input type="file" name="additionalImg" id="additionalImg" />
+                            <div>
+                                <img clas="img-block" src="~/img/product-img/@picture.AdditionalImgPath" />
+                            </div>
+                            <input type="submit" asp-action="DeleteAdditionalPicture" asp-all-route-data='new Dictionary<string,string> { {"model", @Model.Id.ToString()}, { "picture", @picture.Id.ToString() } }' value="Удалить доп.картинку ">
+                        }
+
+                        int timesGenerated = 3 - Model.AdditionalPictures.Count;
+                        while (timesGenerated > 0)
+                        {
+                            <p>Дополнительная картинка</p>
+                            <input type="file" name="additionalImg" id="additionalImg" />
+                            timesGenerated--;
+                        }
+
+                    }
+                }
+                else
+                {
+                    <p>Дополнительная картинка 1</p>
+                    <input type="file" name="additionalImg" id="additionalImg" />
+                    <p>Дополнительная картинка 2</p>
+                    <input type="file" name="additionalImg" id="additionalImg" />
+                }
+            </div>
+            <input type="submit" asp-action="DeleteReviews" asp-route-id="@Model.Id" value="Удалить обзоры" />
+            <input type="submit" asp-action="DeleteRating" asp-route-id="@Model.Id" value="Очистить рейтинг" />
+            <br />
+            <input type="submit" value="Сохранить" />
+        </form>
+    </div>
+</div>
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/site.js" asp-append-version="true"></script>
+@await Html.PartialAsync("_ValidationScriptsPartial")
+<script>    
+    window.onload = function () {
+                    CKEDITOR.config.autoParagraph = false;
+                    var newCKEdit = CKEDITOR.replace('@Html.IdFor(x => x.DescriptionFull)');
+        newCKEdit.updateElement();
+    }
+</script>
+<script>
+
+    $.validator.methods.range = function (value, element, param) {
+        var globalizedValue = value.replace(",", ".");
+        return this.optional(element) || (globalizedValue >= param[0] && globalizedValue <= param[1]);
+    }
+
+    $.validator.methods.number = function (value, element) {
+        return this.optional(element) || /-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+    }
+    //Date dd/MM/yyyy
+    $.validator.methods.date = function (value, element) {
+        var date = value.split("/");
+        return this.optional(element) || !/Invalid|NaN/.test(new Date(date[2], date[1], date[0]).toString());
+    }
+</script>

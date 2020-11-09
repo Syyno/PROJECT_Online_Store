@@ -1,0 +1,193 @@
+﻿@using Microsoft.AspNetCore.Razor.TagHelpers
+@using MyProjectOnlineShop.Data.Entities
+@model MyProjectOnlineShop.Data.Entities.Product
+@{
+    ViewData["Title"] = "Product details";
+}
+
+<div class="single-product-area section-padding-100 clearfix">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-lg-7">
+                <div class="single_product_thumb">
+                    <div id="product_details_slider" class="carousel slide" data-ride="carousel">
+                        <!-- small pictures -->
+                        <ol class="carousel-indicators">
+                            @{ int i = 0;}
+
+                            @if (Model.AdditionalPictures == null || Model.AdditionalPictures.Count == 0)
+                            {
+                                <li class="active" data-target="#product_details_slider" data-slide-to="0" style="background-image: url(/img/product-img/@Model.ImgPath);">
+                                </li>
+                            }
+                            else
+                            {
+                                @foreach (AdditionalPicture picture in Model.AdditionalPictures)
+                                {
+                                    if (i == 0)
+                                    {
+                                        <li class="active" data-target="#product_details_slider" data-slide-to="@i" style="background-image: url(/img/product-img/@Model.ImgPath);">
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li data-target="#product_details_slider" data-slide-to="@i" style="background-image: url(/img/product-img/@picture.AdditionalImgPath);">
+                                        </li>
+                                    }
+                                    i++;
+                                }
+                            }
+
+                            @{ i = 0;}
+
+                        </ol>
+                        <!-- big picture -->
+                        <div class="carousel-inner">
+                            @if (Model.AdditionalPictures == null || Model.AdditionalPictures.Count == 0)
+                            {
+                                <div class="carousel-item active">
+
+                                    <a class="gallery_img" href="/img/product-img/@Model.ImgPath">
+                                        <img class="d-block w-100" src="/img/product-img/@Model.ImgPath">
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (AdditionalPicture picture in Model.AdditionalPictures)
+                                {
+                                    if (i == 0)
+                                    {
+                                        <div class="carousel-item active">
+
+                                            <a class="gallery_img" href="/img/product-img/@Model.ImgPath">
+                                                <img class="d-block w-100" src="/img/product-img/@Model.ImgPath">
+                                            </a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="carousel-item">
+
+                                            <a class="gallery_img" href="/img/product-img/@picture.AdditionalImgPath">
+                                                <img class="d-block w-100" src="/img/product-img/@picture.AdditionalImgPath">
+                                            </a>
+                                        </div>
+                                    }
+                                    i++;
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- description -->
+            <div class="col-12 col-lg-5">
+                <div class="single_product_desc">
+                    <!-- Product Meta Data -->
+                    <div class="product-meta-data">
+                        <div class="line"></div>
+                        <p class="product-price">$@Model.Price</p>
+                        <a href="product-details.html">
+                            <h6>@Model.Name</h6>
+                        </a>
+                        <!-- Ratings & Review -->
+                        <div class="ratings-review mb-15 d-flex align-items-center justify-content-between">
+                            <div class="ratings">
+                                @{
+                                    double? timesGeneratedSolidStars = Model.ProductRatings == null ? 0 : Model.ProductRatings.Rating;
+                                    double? timesGeneratedEmptyStars;
+                                    int rate = 1;
+                                    if (timesGeneratedSolidStars != null)
+                                    {
+                                        timesGeneratedEmptyStars = 5 - timesGeneratedSolidStars;
+                                    }
+                                    else
+                                    {
+                                        timesGeneratedEmptyStars = 5;
+                                    }
+                                }
+                                @for (int j = 0; j < timesGeneratedSolidStars; j++)
+                                {
+                                    <a asp-action="SubmitRating" asp-route-rating="@rate" asp-route-id="@Model.Id" style="display: inline;"> <i class="fa fa-star" aria-hidden="true"></i> </a>
+                                    rate++;
+                                }
+                                @for (int j = 0; j < timesGeneratedEmptyStars; j++)
+                                {
+                                    <a asp-action="SubmitRating" asp-route-rating="@rate" asp-route-id="@Model.Id" style="display: inline;"> <i class="fa fa-star-o" aria-hidden="true"></i> </a>
+                                    rate++;
+                                }
+
+                                @if (Model.ProductRatings != null)
+                                {
+                                    string str = Model.ProductRatings.VotesCount == 0 ? "No votes yet!" : Model.ProductRatings.VotesCount == 1 ? "vote" : "votes";
+                                   
+                                    <i>Based on @Model.ProductRatings.VotesCount @str</i>
+                                }
+                                else
+                                {
+                                    <span>No votes yet!</span>
+                                }
+                            </div>
+                            <div class="review">
+                                <a asp-action="AddReview" asp-route-id="@Model.Id">Write A Review</a>
+                            </div>
+                        </div>
+                        <!-- Available -->
+                        @if (Model.Quantity == null || Model.Quantity == 0)
+                        {
+                            <p class="avaibility"><i class="fa fa-circle-o"></i> Out of Stock</p>
+                        }
+                        else
+                        {
+                            <p class="avaibility"><i class="fa fa-circle"></i> In Stock</p>
+                        }
+                    </div>
+
+                    <div class="short_overview my-5">
+                        <p>@Model.DescriptionFull</p>
+                    </div>
+                    <!-- Add to Cart Form -->
+                    <form class="cart clearfix" method="post">
+                        <div class="cart-btn d-flex mb-50">
+                            <p>Qty</p>
+                            <div class="quantity">
+                                <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value;if (!isNaN(qty) && qty >  1 ) effect.value--; return false;"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
+                                <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="1">
+                                <span class="qty-plus" onclick="var effect = document.getElementById('qty');var qty = effect.value;if (!isNaN(qty)) effect.value++; return false;"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
+                            </div>
+                        </div>
+                        @if (Model.Quantity != null && Model.Quantity > 0)
+                        {
+                            <button type="submit" asp-action="AddToCart" asp-route-id="@Model.Id" class="btn amado-btn">Add to cart</button>
+                        }
+                    </form>
+                </div>
+            </div>
+
+            <h3>Customers reviews:</h3>
+
+        </div>
+        @if (Model.ProductReview != null && Model.ProductReview.Count != 0)
+        {
+            foreach (ProductReview review in Model.ProductReview)
+            {
+                <div class="media d-block text-center product-review">
+                    <p>
+                        <b>@review.Author</b>
+                    </p>
+                    <br />
+                    <p>
+                        <i>
+                            @review.Text
+                        </i>
+                    </p>
+                </div>
+            }
+        }
+        else
+        {
+            <p>There is no customers reviews yet!</p>
+        }
+    </div>
+</div>

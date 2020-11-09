@@ -1,0 +1,16 @@
+﻿@model MyProjectOnlineShop.Data.Entities.ProductReview
+@{
+    ViewData["Title"] = "AddReview";
+}
+
+<div>
+    <h3>Write your review for @ViewBag.entity.Name</h3>
+    <form asp-action="AddReview" method="post" enctype="multipart/form-data" asp-route-model="@ViewBag.entity.Id">
+        <div asp-validation-summary="All"></div>
+        <label asp-for="Author"></label><br />
+        <input asp-for="Author" /> <br />
+        <label asp-for="Text"></label><br />
+        <textarea asp-for="Text"> </textarea> <br />
+        <input type="submit" value="Create review!" />
+    </form>
+</div>
